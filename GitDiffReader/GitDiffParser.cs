@@ -1,6 +1,7 @@
 ﻿using GitDiffReader.Format;
 using System;
 using System.IO;
+using System.Linq;
 
 namespace GitDiffReader
 {
@@ -8,14 +9,42 @@ namespace GitDiffReader
     {
         private readonly StringReader _reader;
         private readonly char[] _delimeter = new [] { ' ' };
-        private const int InputSourcesExpectedNumberOfParts = 4;
 
         public GitDiffParser(StringReader reader)
         {
             _reader = reader;
         }
 
-        internal bool TryReadInputSources(GitDiff diff)
+        internal GitDiff Parse()
+        {
+            Func<GitDiff, bool>[] stages = GetParsingStages();
+
+            var result = new GitDiff();
+            var stageResults = stages.TakeWhile(s => s(result)).ToArray();
+
+            bool isValid = stages.Length == stageResults.Length;
+            if (isValid)
+            {
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private Func<GitDiff, bool>[] GetParsingStages()
+        {
+            return new Func<GitDiff, bool>[]
+            {
+                (GitDiff d) => TryReadInputSources(d),
+                (GitDiff d) => TryReadMetadata(d),
+                (GitDiff d) => TryReadMarkers(d),
+                (GitDiff d) => TryParseChunks(d)
+            };
+        }
+
+        private bool TryReadInputSources(GitDiff diff)
         {
             bool result = false;
 
@@ -23,7 +52,7 @@ namespace GitDiffReader
             if (!String.IsNullOrWhiteSpace(rawInputSources))
             {
                 var parts = rawInputSources.Split(_delimeter, StringSplitOptions.RemoveEmptyEntries);
-                if(parts.Length == (int)InputSourcesLineParts.TotalNumberOfParts)
+                if (parts.Length == (int)InputSourcesLineParts.TotalNumberOfParts)
                 {
                     diff.InputSources = rawInputSources;
                     diff.LeftInput = parts[(int)InputSourcesLineParts.LeftFile];
@@ -36,7 +65,31 @@ namespace GitDiffReader
             return result;
         }
 
-        internal bool TryReadMetadata(GitDiff diff)
+        private bool TryParseChunks(GitDiff result)
+        {
+            var rawChunkHeader = _reader.ReadLine();
+            while (!String.IsNullOrWhiteSpace(rawChunkHeader) && GitDiffChunk.ChunkFirstSymbol == rawChunkHeader[0])
+            {
+                var chunk = new GitDiffChunk();
+                var line = _reader.ReadLine();
+                while (!String.IsNullOrWhiteSpace(line) && GitDiffChunk.ChunkFirstSymbol != line[0])
+                {
+                    switch (line[0])
+                    {
+                        case '+': chunk.AddedLines++; break;
+                        case '-': chunk.RemovedLines++; break;
+                    }
+                    line = _reader.ReadLine();
+                }
+                result.AddChunk(chunk);
+
+                rawChunkHeader = line;
+            }
+
+            return true;
+        }
+
+        private bool TryReadMetadata(GitDiff diff)
         {
             bool result = false;
 
@@ -50,7 +103,7 @@ namespace GitDiffReader
             return result;
         }
 
-        internal bool TryReadMarkers(GitDiff diff)
+        private bool TryReadMarkers(GitDiff diff)
         {
             bool result = false;
 

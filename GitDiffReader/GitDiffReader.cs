@@ -13,25 +13,11 @@ namespace GitDiffReader
                 return null;
             }
 
-            var result = new GitDiff();
-
             using (StringReader reader = new StringReader(diff))
             {
                 GitDiffParser parser = new GitDiffParser(reader);
-
-                if (parser.TryReadInputSources(result))
-                {
-                    if (parser.TryReadMetadata(result))
-                    {
-                        if (parser.TryReadMarkers(result))
-                        {
-                            return result;
-                        }
-                    }
-                }
+                return parser.Parse();
             }
-
-            return null;
         }
     }
 }

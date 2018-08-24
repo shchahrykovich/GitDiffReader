@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Xunit;
 
 namespace GitDiffReader.Tests
@@ -61,6 +62,9 @@ index 6b0c6cf..b37e70a 100644
             Assert.Equal("+++", result.RightMarker.Marker);
             Assert.Equal('+', result.RightMarker.Symbol);
 
+            Assert.Equal(1, result.Chunks.Count());
+            Assert.Equal(1, result.Chunks.First().AddedLines);
+            Assert.Equal(1, result.Chunks.First().RemovedLines);
         }
     }
 }
