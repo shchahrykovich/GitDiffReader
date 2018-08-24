@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2003
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitDiffReader", "GitDiffReader\GitDiffReader.csproj", "{906CD184-489C-460F-914B-99B357AB16AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitDiffReader.Tests", "GitDiffReader.Tests\GitDiffReader.Tests.csproj", "{31E67188-DD57-423D-BD4B-F05266ED7B3D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{906CD184-489C-460F-914B-99B357AB16AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{906CD184-489C-460F-914B-99B357AB16AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{906CD184-489C-460F-914B-99B357AB16AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{906CD184-489C-460F-914B-99B357AB16AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31E67188-DD57-423D-BD4B-F05266ED7B3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31E67188-DD57-423D-BD4B-F05266ED7B3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31E67188-DD57-423D-BD4B-F05266ED7B3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31E67188-DD57-423D-BD4B-F05266ED7B3D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {03B7C397-BBCF-45BA-B113-9E2D63D75BC9}
+	EndGlobalSection
+EndGlobal
