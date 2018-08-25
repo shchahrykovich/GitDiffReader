@@ -23,14 +23,7 @@ namespace GitDiffReader
             var stageResults = stages.TakeWhile(s => s(result)).ToArray();
 
             bool isValid = stages.Length == stageResults.Length;
-            if (isValid)
-            {
-                return result;
-            }
-            else
-            {
-                return null;
-            }
+            return isValid ? result : null;
         }
 
         private Func<GitDiff, bool>[] GetParsingStages()
@@ -68,16 +61,24 @@ namespace GitDiffReader
         private bool TryParseChunks(GitDiff result)
         {
             var rawChunkHeader = _reader.ReadLine();
-            while (!String.IsNullOrWhiteSpace(rawChunkHeader) && GitDiffChunk.ChunkFirstSymbol == rawChunkHeader[0])
+            while (null != rawChunkHeader && GitDiffChunk.ChunkFirstSymbol == rawChunkHeader[0])
             {
                 var chunk = new GitDiffChunk();
                 var line = _reader.ReadLine();
-                while (!String.IsNullOrWhiteSpace(line) && GitDiffChunk.ChunkFirstSymbol != line[0])
+                while (null != line)
                 {
-                    switch (line[0])
+                    if (!String.IsNullOrWhiteSpace(line))
                     {
-                        case '+': chunk.AddedLines++; break;
-                        case '-': chunk.RemovedLines++; break;
+                        if (GitDiffChunk.ChunkFirstSymbol == line[0])
+                        {
+                            break;
+                        }
+
+                        switch (line[0])
+                        {
+                            case '+': chunk.AddedLines++; break;
+                            case '-': chunk.RemovedLines++; break;
+                        }
                     }
                     line = _reader.ReadLine();
                 }
@@ -97,6 +98,11 @@ namespace GitDiffReader
             if (!String.IsNullOrWhiteSpace(rawMetadata))
             {
                 diff.Metadata = rawMetadata;
+                if (!rawMetadata.StartsWith("index"))
+                {
+                    diff.Metadata += Environment.NewLine;
+                    diff.Metadata += _reader.ReadLine();
+                }
                 result = true;
             }
 
